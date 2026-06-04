@@ -1,14 +1,46 @@
 """
-    Создать список из трат за неделю (7 чисел)
-    Посчитать сумму, среднее, минимум и максимум.
-    Сохранить в кортеже (минимум, максимум, сумма) и вывести его.
+    Принять строку формата "<руб> руб <коп> коп" (пример: 100 руб 10 коп) 
+    и вывести нормализованную сумму в рублях с двумя знаками после запятой: 100.10 ₽.
+
+    Поддержать варианты без копеек ("159 руб" → "159.00 ₽").
+
+    Программа читает одну строку из input()
+    Регистр и лишние пробелы игнорируются
+    Допустимые слова для единиц
+    На выходе — сумма в виде X.YY ₽ (два знака после запятой)
+    Если формат некорректный — вывести:
+    Некорректный формат суммы
 """
+user_input = input().strip().lower()
+parts = user_input.split()
 
-expense_list = [30, 890, 57, 365, 439, 1009, 45]
-expenses_sum = sum(expense_list)
-average_daily = expenses_sum / len(expense_list)
-max_expense = max(expense_list)
-min_expense = min(expense_list)
+# Поддерживаем два формата:
+# 1. "<rub> руб" → 2 части
+# 2. "<rub> руб <kop> коп" → 4 части
+if len(parts) == 2:
+    rub_str, rub_unit = parts
+    # Проверка: rub_str — это целое число?
+    if rub_str.isdigit():
+        rub = int(rub_str)
+        # Проверка допустимости слова «руб»
+        if rub_unit == "руб":
+            print(f"{rub}.00 ₽")
+            exit()
+elif len(parts) == 4:
+    rub_str, rub_unit, kop_str, kop_unit = parts
+    # Проверка: rub и kop — целые числа
+    rub_ok = rub_str.isdigit()
+    kop_ok = kop_str.isdigit()
 
-balance = (min_expense, max_expense, expenses_sum)
-print(balance)
+    if rub_ok and kop_ok:
+        rub = int(rub_str)
+        kop = int(kop_str)
+        # Проверка допустимых слов и диапазона копеек (0–99)
+        if (rub_unit == "руб" and
+            kop_unit == "коп" and
+            0 <= kop <= 99):
+            print(f"{rub}.{kop:02d} ₽")
+            exit()
+
+# Если ни один из допустимых вариантов не сработал — ошибка
+print("Некорректный формат суммы")
